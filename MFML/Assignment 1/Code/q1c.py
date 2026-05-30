@@ -9,7 +9,7 @@ from utils import (
 )
 
 
-def run_q1c():
+def run_q1c(verbose=True):
 
     np.random.seed(10)
 
@@ -25,12 +25,12 @@ def run_q1c():
     print("\nVector b:")
     print(b)
 
-    REF = ref(Aug)
+    REF = ref(Aug, verbose)
 
     print("\nREF:")
     print(REF)
 
-    RREF = rref(Aug)
+    RREF = rref(Aug, verbose)
 
     print("\nRREF:")
     print(RREF)
@@ -47,7 +47,8 @@ def run_q1c():
     particular = particular_solution(
         RREF,
         pivot_columns,
-        free_columns
+        free_columns,
+        verbose
     )
 
     print("\nParticular Solution:")
@@ -56,7 +57,8 @@ def run_q1c():
     basis = null_space_basis(
         RREF,
         pivot_columns,
-        free_columns
+        free_columns,
+        verbose
     )
 
     print("\nNull Space Basis:")

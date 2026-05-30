@@ -3,7 +3,7 @@ import numpy as np
 from q2c import qr_decomposition
 
 
-def run_q2d():
+def run_q2d(verbose=True):
 
     np.random.seed(50)
 
@@ -12,18 +12,18 @@ def run_q2d():
     print("\nRandom 7x5 Matrix:")
     print(A)
 
-    Q, R = qr_decomposition(A)
+    Q, R = qr_decomposition(A, verbose)
 
     print("\nQ:")
-    print(Q)
+    print(np.round(Q, 3))
 
     print("\nR:")
-    print(R)
+    print(np.round(R, 3))
 
     print("\nDiagonal Entries of R:")
 
     for i in range(R.shape[0]):
-        print(R[i][i])
+        print(np.round(R[i][i], 3))
 
     print("\nVerification:")
     print(np.allclose(A, np.dot(Q, R)))
