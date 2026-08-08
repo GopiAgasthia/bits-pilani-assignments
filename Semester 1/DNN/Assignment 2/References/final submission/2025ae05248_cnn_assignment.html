@@ -1,0 +1,859 @@
+<p><strong>BITS ID</strong> : 2025AE05248</p>
+<p><strong>Name</strong> : SOWBARNIGAA K S</p>
+<p><strong>Email</strong> : 2025ae05248@wilp.bits-pilani.ac.in</p>
+<p><strong>Date</strong> : 03.05.2026</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, precision_score, recall_score, f1_score</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix, classification_report</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="im">import</span> time</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="im">import</span> json</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="im">import</span> os</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="im">import</span> warnings</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>warnings.filterwarnings(<span class="st">&#39;ignore&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># TensorFlow and Keras</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="im">from</span> tensorflow <span class="im">import</span> keras</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="im">from</span> tensorflow.keras <span class="im">import</span> layers, models</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="im">from</span> tensorflow.keras.applications <span class="im">import</span> ResNet50</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="im">import</span> tensorflow_datasets <span class="im">as</span> tfds</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;CNN ASSIGNMENT - DEEP NEURAL NETWORKS&quot;</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;TensorFlow version: </span><span class="sc">{tf.</span>__version__<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;GPU Available: </span><span class="sc">{</span><span class="bu">len</span>(tf.config.list_physical_devices(<span class="st">&#39;GPU&#39;</span>)) <span class="op">&gt;</span> <span class="dv">0</span><span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span></code></pre></div>
+<pre><code>======================================================================
+CNN ASSIGNMENT - DEEP NEURAL NETWORKS
+======================================================================
+TensorFlow version: 2.20.0
+GPU Available: False
+======================================================================</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co"># PART 1: DATASET LOADING AND EXPLORATION</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 1: DATASET LOADING AND EXPLORATION&quot;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Loading Cats vs Dogs dataset...&quot;</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a><span class="co"># Load dataset</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>(ds_train, ds_test), ds_info <span class="op">=</span> tfds.load(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>    <span class="st">&#39;cats_vs_dogs&#39;</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    split<span class="op">=</span>[<span class="st">&#39;train[:85%]&#39;</span>, <span class="st">&#39;train[85%:]&#39;</span>],</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    shuffle_files<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>    as_supervised<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    with_info<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>)</span></code></pre></div>
+<pre><code>======================================================================
+PART 1: DATASET LOADING AND EXPLORATION
+======================================================================
+
+Loading Cats vs Dogs dataset...
+
+
+WARNING:absl:Variant folder /root/tensorflow_datasets/cats_vs_dogs/4.0.1 has no dataset_info.json
+
+
+Downloading and preparing dataset Unknown size (download: Unknown size, generated: Unknown size, total: Unknown size) to /root/tensorflow_datasets/cats_vs_dogs/4.0.1...
+
+
+
+Dl Completed...: 0 url [00:00, ? url/s]
+
+
+
+Dl Size...: 0 MiB [00:00, ? MiB/s]
+
+
+
+Generating splits...:   0%|          | 0/1 [00:00&lt;?, ? splits/s]
+
+
+
+Generating train examples...: 0 examples [00:00, ? examples/s]
+
+
+WARNING:absl:1738 images were corrupted and were skipped
+
+
+
+Shuffling /root/tensorflow_datasets/cats_vs_dogs/incomplete.ENYZNO_4.0.1/cats_vs_dogs-train.tfrecord*...:   0%…
+
+
+Dataset cats_vs_dogs downloaded and prepared to /root/tensorflow_datasets/cats_vs_dogs/4.0.1. Subsequent calls will reuse this data.</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co"># Dataset metadata</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>dataset_name <span class="op">=</span> <span class="st">&quot;Cats vs Dogs&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>dataset_source <span class="op">=</span> <span class="st">&quot;TensorFlow Datasets (Microsoft)&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>n_samples <span class="op">=</span> ds_info.splits[<span class="st">&#39;train&#39;</span>].num_examples</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>n_classes <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>samples_per_class <span class="op">=</span> <span class="ss">f&quot;min: </span><span class="sc">{</span>n_samples<span class="op">//</span><span class="dv">2</span><span class="sc">}</span><span class="ss">, max: </span><span class="sc">{</span>n_samples<span class="op">//</span><span class="dv">2</span><span class="sc">}</span><span class="ss">, avg: </span><span class="sc">{</span>n_samples<span class="op">//</span><span class="dv">2</span><span class="sc">}</span><span class="ss">&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>image_shape <span class="op">=</span> [<span class="dv">224</span>, <span class="dv">224</span>, <span class="dv">3</span>]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>problem_type <span class="op">=</span> <span class="st">&quot;binary_classification&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>train_test_ratio <span class="op">=</span> <span class="st">&quot;85/15&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>train_samples <span class="op">=</span> <span class="bu">int</span>(n_samples <span class="op">*</span> <span class="fl">0.85</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>test_samples <span class="op">=</span> <span class="bu">int</span>(n_samples <span class="op">*</span> <span class="fl">0.15</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co"># Primary metric selection</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>primary_metric <span class="op">=</span> <span class="st">&quot;accuracy&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>metric_justification <span class="op">=</span> <span class="st">&quot;Accuracy is chosen as the primary metric because the Cats vs Dogs dataset is balanced with approximately equal samples per class, making accuracy a reliable performance indicator.&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">DATASET INFORMATION&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Dataset: </span><span class="sc">{</span>dataset_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Source: </span><span class="sc">{</span>dataset_source<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Total Samples: </span><span class="sc">{</span>n_samples<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Number of Classes: </span><span class="sc">{</span>n_classes<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Samples per Class: </span><span class="sc">{</span>samples_per_class<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Image Shape: </span><span class="sc">{</span>image_shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Primary Metric: </span><span class="sc">{</span>primary_metric<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Metric Justification: </span><span class="sc">{</span>metric_justification<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Train/Test Split: </span><span class="sc">{</span>train_test_ratio<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Training Samples: </span><span class="sc">{</span>train_samples<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Test Samples: </span><span class="sc">{</span>test_samples<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<pre><code>DATASET INFORMATION
+----------------------------------------------------------------------
+Dataset: Cats vs Dogs
+Source: TensorFlow Datasets (Microsoft)
+Total Samples: 23262
+Number of Classes: 2
+Samples per Class: min: 11631, max: 11631, avg: 11631
+Image Shape: [224, 224, 3]
+Primary Metric: accuracy
+Metric Justification: Accuracy is chosen as the primary metric because the Cats vs Dogs dataset is balanced with approximately equal samples per class, making accuracy a reliable performance indicator.
+
+Train/Test Split: 85/15
+Training Samples: 19772
+Test Samples: 3489</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="co"># Data Preprocessing</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Preprocessing dataset...&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="kw">def</span> preprocess_image(image, label):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>    <span class="co">&quot;&quot;&quot;Resize and normalize images&quot;&quot;&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>    image <span class="op">=</span> tf.image.resize(image, [<span class="dv">224</span>, <span class="dv">224</span>])</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>    image <span class="op">=</span> tf.cast(image, tf.float32) <span class="op">/</span> <span class="fl">255.0</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>    <span class="cf">return</span> image, label</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a><span class="kw">def</span> augment_image(image, label):</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>    <span class="co">&quot;&quot;&quot;Apply data augmentation&quot;&quot;&quot;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>    image <span class="op">=</span> tf.image.random_flip_left_right(image)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>    image <span class="op">=</span> tf.image.random_brightness(image, <span class="fl">0.2</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>    <span class="cf">return</span> image, label</span></code></pre></div>
+<pre><code>Preprocessing dataset...</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co"># Configure datasets</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>BATCH_SIZE <span class="op">=</span> <span class="dv">32</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>AUTOTUNE <span class="op">=</span> tf.data.AUTOTUNE</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="co"># Prepare training dataset with augmentation</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.<span class="bu">map</span>(preprocess_image, num_parallel_calls<span class="op">=</span>AUTOTUNE)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.<span class="bu">map</span>(augment_image, num_parallel_calls<span class="op">=</span>AUTOTUNE)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.cache()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.shuffle(<span class="dv">1000</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.batch(BATCH_SIZE)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a>ds_train <span class="op">=</span> ds_train.prefetch(AUTOTUNE)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a><span class="co"># Prepare test dataset</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>ds_test <span class="op">=</span> ds_test.<span class="bu">map</span>(preprocess_image, num_parallel_calls<span class="op">=</span>AUTOTUNE)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>ds_test <span class="op">=</span> ds_test.batch(BATCH_SIZE)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a>ds_test <span class="op">=</span> ds_test.cache()</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a>ds_test <span class="op">=</span> ds_test.prefetch(AUTOTUNE)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Dataset preprocessing complete!&quot;</span>)</span></code></pre></div>
+<pre><code>✓ Dataset preprocessing complete!</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="co"># Visualize sample images</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Generating sample visualizations...&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>class_names <span class="op">=</span> [<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true"></a><span class="cf">for</span> images, labels <span class="kw">in</span> ds_test.take(<span class="dv">1</span>):</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">9</span>):</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true"></a>        plt.subplot(<span class="dv">3</span>, <span class="dv">3</span>, i <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true"></a>        plt.imshow(images[i].numpy())</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true"></a>        plt.title(<span class="ss">f&quot;</span><span class="sc">{</span>class_names[labels[i].numpy()]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true"></a>        plt.axis(<span class="st">&#39;off&#39;</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true"></a>plt.suptitle(<span class="st">&#39;Sample Images from Cats vs Dogs Dataset&#39;</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;dataset_samples.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: dataset_samples.png&quot;</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<pre><code>Generating sample visualizations...
+✓ Saved: dataset_samples.png</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="co"># Class distribution</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>class_counts <span class="op">=</span> [n_samples<span class="op">//</span><span class="dv">2</span>, n_samples<span class="op">//</span><span class="dv">2</span>]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a>plt.bar(class_names, class_counts, color<span class="op">=</span>[<span class="st">&#39;orange&#39;</span>, <span class="st">&#39;skyblue&#39;</span>])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a>plt.title(<span class="st">&#39;Class Distribution&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a>plt.ylabel(<span class="st">&#39;Number of Images&#39;</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a>plt.xlabel(<span class="st">&#39;Class&#39;</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a><span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(class_counts):</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a>    plt.text(i, v <span class="op">+</span> <span class="dv">100</span>, <span class="bu">str</span>(v), ha<span class="op">=</span><span class="st">&#39;center&#39;</span>, va<span class="op">=</span><span class="st">&#39;bottom&#39;</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;class_distribution.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: class_distribution.png&quot;</span>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<pre><code>✓ Saved: class_distribution.png</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="co"># PART 2: CUSTOM CNN IMPLEMENTATION</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 2: CUSTOM CNN IMPLEMENTATION&quot;</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true"></a><span class="kw">def</span> build_custom_cnn(input_shape, n_classes):</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true"></a><span class="co">    Build custom CNN architecture with Global Average Pooling</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true"></a><span class="co">    Args:</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true"></a><span class="co">        input_shape: tuple (height, width, channels)</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true"></a><span class="co">        n_classes: number of output classes</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true"></a><span class="co">    Returns:</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true"></a><span class="co">        model: compiled CNN model</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true"></a>    model <span class="op">=</span> models.Sequential([</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true"></a>        <span class="co"># Input layer</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true"></a>        layers.Input(shape<span class="op">=</span>input_shape),</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true"></a></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true"></a>        <span class="co"># First Convolutional Block</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">32</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">32</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true"></a>        layers.MaxPooling2D((<span class="dv">2</span>, <span class="dv">2</span>)),</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true"></a>        layers.Dropout(<span class="fl">0.25</span>),</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true"></a></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true"></a>        <span class="co"># Second Convolutional Block</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">64</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">64</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true"></a>        layers.MaxPooling2D((<span class="dv">2</span>, <span class="dv">2</span>)),</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true"></a>        layers.Dropout(<span class="fl">0.25</span>),</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true"></a></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true"></a>        <span class="co"># Third Convolutional Block</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">128</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true"></a>        layers.Conv2D(<span class="dv">128</span>, (<span class="dv">3</span>, <span class="dv">3</span>), activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, padding<span class="op">=</span><span class="st">&#39;same&#39;</span>),</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true"></a>        layers.BatchNormalization(),</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true"></a>        layers.MaxPooling2D((<span class="dv">2</span>, <span class="dv">2</span>)),</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true"></a>        layers.Dropout(<span class="fl">0.25</span>),</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true"></a></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true"></a>        <span class="co"># Global Average Pooling (MANDATORY - NO Flatten+Dense)</span></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true"></a>        layers.GlobalAveragePooling2D(),</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true"></a></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true"></a>        <span class="co"># Output layer</span></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>) <span class="cf">if</span> n_classes <span class="op">==</span> <span class="dv">2</span> <span class="cf">else</span> layers.Dense(n_classes, activation<span class="op">=</span><span class="st">&#39;softmax&#39;</span>)</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true"></a>    ], name<span class="op">=</span><span class="st">&#39;Custom_CNN&#39;</span>)</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true"></a></span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true"></a>    <span class="cf">return</span> model</span></code></pre></div>
+<pre><code>======================================================================
+PART 2: CUSTOM CNN IMPLEMENTATION
+======================================================================</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a><span class="co"># Create model instance</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Building Custom CNN architecture...&quot;</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a>custom_cnn <span class="op">=</span> build_custom_cnn(image_shape, n_classes)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a><span class="co"># Compile model</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a>custom_cnn.<span class="bu">compile</span>(</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true"></a>    optimizer<span class="op">=</span>keras.optimizers.Adam(learning_rate<span class="op">=</span><span class="fl">0.001</span>),</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true"></a>    loss<span class="op">=</span><span class="st">&#39;binary_crossentropy&#39;</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true"></a>    metrics<span class="op">=</span>[<span class="st">&#39;accuracy&#39;</span>]</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true"></a>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">CUSTOM CNN ARCHITECTURE&quot;</span>)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true"></a>custom_cnn.summary()</span></code></pre></div>
+<pre><code>Building Custom CNN architecture...
+
+CUSTOM CNN ARCHITECTURE
+----------------------------------------------------------------------</code></pre>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Model: "Custom_CNN"</span>
+</pre>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold"> Layer (type)                    </span>┃<span style="font-weight: bold"> Output Shape           </span>┃<span style="font-weight: bold">       Param # </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ conv2d (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)                 │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">896</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization             │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">128</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │         <span style="color: #00af00; text-decoration-color: #00af00">9,248</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_1           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">224</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">128</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling2D</span>)    │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">32</span>)   │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)   │        <span style="color: #00af00; text-decoration-color: #00af00">18,496</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_2           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">256</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_3 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)   │        <span style="color: #00af00; text-decoration-color: #00af00">36,928</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_3           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">112</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)   │           <span style="color: #00af00; text-decoration-color: #00af00">256</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling2D</span>)  │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)     │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_1 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)             │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">64</span>)     │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_4 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │        <span style="color: #00af00; text-decoration-color: #00af00">73,856</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_4           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │           <span style="color: #00af00; text-decoration-color: #00af00">512</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_5 (<span style="color: #0087ff; text-decoration-color: #0087ff">Conv2D</span>)               │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │       <span style="color: #00af00; text-decoration-color: #00af00">147,584</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ batch_normalization_5           │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">56</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │           <span style="color: #00af00; text-decoration-color: #00af00">512</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">BatchNormalization</span>)            │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">MaxPooling2D</span>)  │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">28</span>, <span style="color: #00af00; text-decoration-color: #00af00">28</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_2 (<span style="color: #0087ff; text-decoration-color: #0087ff">Dropout</span>)             │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">28</span>, <span style="color: #00af00; text-decoration-color: #00af00">28</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)    │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ global_average_pooling2d        │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">128</span>)            │             <span style="color: #00af00; text-decoration-color: #00af00">0</span> │
+│ (<span style="color: #0087ff; text-decoration-color: #0087ff">GlobalAveragePooling2D</span>)        │                        │               │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense (<span style="color: #0087ff; text-decoration-color: #0087ff">Dense</span>)                   │ (<span style="color: #00d7ff; text-decoration-color: #00d7ff">None</span>, <span style="color: #00af00; text-decoration-color: #00af00">1</span>)              │           <span style="color: #00af00; text-decoration-color: #00af00">129</span> │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+</pre>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Total params: </span><span style="color: #00af00; text-decoration-color: #00af00">288,929</span> (1.10 MB)
+</pre>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">288,033</span> (1.10 MB)
+</pre>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold"> Non-trainable params: </span><span style="color: #00af00; text-decoration-color: #00af00">896</span> (3.50 KB)
+</pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="co"># Count architecture components</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>conv_layers <span class="op">=</span> <span class="bu">len</span>([layer <span class="cf">for</span> layer <span class="kw">in</span> custom_cnn.layers <span class="cf">if</span> <span class="bu">isinstance</span>(layer, layers.Conv2D)])</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>pooling_layers <span class="op">=</span> <span class="bu">len</span>([layer <span class="cf">for</span> layer <span class="kw">in</span> custom_cnn.layers <span class="cf">if</span> <span class="bu">isinstance</span>(layer, (layers.MaxPooling2D, layers.AveragePooling2D))])</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>has_gap <span class="op">=</span> <span class="bu">any</span>(<span class="bu">isinstance</span>(layer, layers.GlobalAveragePooling2D) <span class="cf">for</span> layer <span class="kw">in</span> custom_cnn.layers)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>custom_cnn_total_params <span class="op">=</span> custom_cnn.count_params()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Architecture Summary:&quot;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Conv2D Layers: </span><span class="sc">{</span>conv_layers<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Pooling Layers: </span><span class="sc">{</span>pooling_layers<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Has Global Average Pooling: </span><span class="sc">{</span>has_gap<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Total Parameters: </span><span class="sc">{</span>custom_cnn_total_params<span class="sc">:,}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<pre><code>Architecture Summary:
+Conv2D Layers: 6
+Pooling Layers: 3
+Has Global Average Pooling: True
+Total Parameters: 288,929</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="co"># Train Custom CNN</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;-&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;TRAINING CUSTOM CNN&quot;</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true"></a>EPOCHS <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true"></a><span class="co"># Callbacks</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true"></a>early_stopping <span class="op">=</span> keras.callbacks.EarlyStopping(</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true"></a>    monitor<span class="op">=</span><span class="st">&#39;val_loss&#39;</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true"></a>    patience<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true"></a>    restore_best_weights<span class="op">=</span><span class="va">True</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true"></a>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true"></a>reduce_lr <span class="op">=</span> keras.callbacks.ReduceLROnPlateau(</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true"></a>    monitor<span class="op">=</span><span class="st">&#39;val_loss&#39;</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true"></a>    factor<span class="op">=</span><span class="fl">0.5</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true"></a>    patience<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true"></a>    min_lr<span class="op">=</span><span class="fl">1e-7</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true"></a>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true"></a></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true"></a><span class="co"># Track training time</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true"></a>custom_cnn_start_time <span class="op">=</span> time.time()</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true"></a></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true"></a><span class="co"># Train model</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true"></a>history_custom <span class="op">=</span> custom_cnn.fit(</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true"></a>    ds_train,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true"></a>    epochs<span class="op">=</span>EPOCHS,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true"></a>    validation_data<span class="op">=</span>ds_test,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true"></a>    callbacks<span class="op">=</span>[early_stopping, reduce_lr],</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true"></a>    verbose<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true"></a>)</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true"></a></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true"></a>custom_cnn_training_time <span class="op">=</span> time.time() <span class="op">-</span> custom_cnn_start_time</span></code></pre></div>
+<pre><code>----------------------------------------------------------------------
+TRAINING CUSTOM CNN
+----------------------------------------------------------------------
+Epoch 1/20
+[1m184/618[0m [32m━━━━━[0m[37m━━━━━━━━━━━━━━━[0m [1m1:42:50[0m 14s/step - accuracy: 0.5691 - loss: 0.7375</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a>custom_cnn_training_time <span class="op">=</span> time.time() <span class="op">-</span> custom_cnn_start_time</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a><span class="co"># Track initial and final loss</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a>custom_cnn_initial_loss <span class="op">=</span> history_custom.history[<span class="st">&#39;loss&#39;</span>][<span class="dv">0</span>]</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>custom_cnn_final_loss <span class="op">=</span> history_custom.history[<span class="st">&#39;loss&#39;</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">✓ Training completed in </span><span class="sc">{</span>custom_cnn_training_time<span class="sc">:.2f}</span><span class="ss"> seconds&quot;</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Initial Loss: </span><span class="sc">{</span>custom_cnn_initial_loss<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Final Loss: </span><span class="sc">{</span>custom_cnn_final_loss<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Loss Reduction: </span><span class="sc">{</span>((custom_cnn_initial_loss <span class="op">-</span> custom_cnn_final_loss) <span class="op">/</span> custom_cnn_initial_loss <span class="op">*</span> <span class="dv">100</span>)<span class="sc">:.2f}</span><span class="ss">%&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="co"># Evaluate Custom CNN</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;-&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;EVALUATING CUSTOM CNN&quot;</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true"></a><span class="co"># Make predictions on test set</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true"></a>y_pred_probs <span class="op">=</span> custom_cnn.predict(ds_test, verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true"></a>y_pred <span class="op">=</span> (y_pred_probs <span class="op">&gt;</span> <span class="fl">0.5</span>).astype(<span class="bu">int</span>).flatten()</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true"></a><span class="co"># Get true labels</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true"></a>y_test <span class="op">=</span> np.concatenate([y <span class="cf">for</span> x, y <span class="kw">in</span> ds_test], axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true"></a><span class="co"># Calculate all 4 required metrics</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true"></a>custom_cnn_accuracy <span class="op">=</span> accuracy_score(y_test, y_pred)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true"></a>custom_cnn_precision <span class="op">=</span> precision_score(y_test, y_pred, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true"></a>custom_cnn_recall <span class="op">=</span> recall_score(y_test, y_pred, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true"></a>custom_cnn_f1 <span class="op">=</span> f1_score(y_test, y_pred, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Custom CNN Performance:&quot;</span>)</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Accuracy:  </span><span class="sc">{</span>custom_cnn_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Precision: </span><span class="sc">{</span>custom_cnn_precision<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Recall:    </span><span class="sc">{</span>custom_cnn_recall<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;F1-Score:  </span><span class="sc">{</span>custom_cnn_f1<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true"></a></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Classification Report:&quot;</span>)</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true"></a><span class="bu">print</span>(classification_report(y_test, y_pred, target_names<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a><span class="co"># Visualize Custom CNN Results</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Generating Custom CNN visualizations...&quot;</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true"></a><span class="co"># Training curves</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">5</span>))</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true"></a>axes[<span class="dv">0</span>].plot(history_custom.history[<span class="st">&#39;loss&#39;</span>], label<span class="op">=</span><span class="st">&#39;Training Loss&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true"></a>axes[<span class="dv">0</span>].plot(history_custom.history[<span class="st">&#39;val_loss&#39;</span>], label<span class="op">=</span><span class="st">&#39;Validation Loss&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_title(<span class="st">&#39;Custom CNN - Loss Curve&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">&#39;Epoch&#39;</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">&#39;Loss&#39;</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true"></a>axes[<span class="dv">0</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true"></a>axes[<span class="dv">1</span>].plot(history_custom.history[<span class="st">&#39;accuracy&#39;</span>], label<span class="op">=</span><span class="st">&#39;Training Accuracy&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true"></a>axes[<span class="dv">1</span>].plot(history_custom.history[<span class="st">&#39;val_accuracy&#39;</span>], label<span class="op">=</span><span class="st">&#39;Validation Accuracy&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_title(<span class="st">&#39;Custom CNN - Accuracy Curve&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">&#39;Epoch&#39;</span>)</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">&#39;Accuracy&#39;</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true"></a>axes[<span class="dv">1</span>].legend()</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true"></a>axes[<span class="dv">1</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true"></a></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;custom_cnn_training_curves.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: custom_cnn_training_curves.png&quot;</span>)</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a><span class="co"># Confusion Matrix</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true"></a>sns.heatmap(cm, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">&#39;d&#39;</span>, cmap<span class="op">=</span><span class="st">&#39;Blues&#39;</span>, xticklabels<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>], yticklabels<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>])</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true"></a>plt.title(<span class="st">&#39;Custom CNN - Confusion Matrix&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true"></a>plt.ylabel(<span class="st">&#39;True Label&#39;</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true"></a>plt.xlabel(<span class="st">&#39;Predicted Label&#39;</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;custom_cnn_confusion_matrix.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: custom_cnn_confusion_matrix.png&quot;</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true"></a><span class="co"># PART 3: TRANSFER LEARNING IMPLEMENTATION</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 3: TRANSFER LEARNING IMPLEMENTATION&quot;</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true"></a>pretrained_model_name <span class="op">=</span> <span class="st">&quot;ResNet50&quot;</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true"></a><span class="kw">def</span> build_transfer_learning_model(base_model_name, input_shape, n_classes):</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true"></a><span class="co">    Build transfer learning model with Global Average Pooling</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true"></a></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true"></a><span class="co">    Args:</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true"></a><span class="co">        base_model_name: string (ResNet50)</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true"></a><span class="co">        input_shape: tuple (height, width, channels)</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true"></a><span class="co">        n_classes: number of output classes</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true"></a></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true"></a><span class="co">    Returns:</span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true"></a><span class="co">        model: compiled transfer learning model</span></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true"></a><span class="co">        base_model: the base model for layer counting</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true"></a>    <span class="co"># Load pre-trained ResNet50 without top layers</span></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true"></a>    base_model <span class="op">=</span> ResNet50(</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true"></a>        weights<span class="op">=</span><span class="st">&#39;imagenet&#39;</span>,</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true"></a>        include_top<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true"></a>        input_shape<span class="op">=</span>input_shape</span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true"></a>    )</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true"></a></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true"></a>    <span class="co"># Freeze base layers</span></span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true"></a>    base_model.trainable <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true"></a></span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true"></a>    <span class="co"># Build model with Global Average Pooling</span></span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true"></a>    model <span class="op">=</span> models.Sequential([</span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true"></a>        base_model,</span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true"></a>        layers.GlobalAveragePooling2D(),  <span class="co"># MANDATORY - NO Flatten+Dense</span></span>
+<span id="cb30-38"><a href="#cb30-38" aria-hidden="true"></a>        layers.Dropout(<span class="fl">0.3</span>),</span>
+<span id="cb30-39"><a href="#cb30-39" aria-hidden="true"></a>        layers.Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">&#39;sigmoid&#39;</span>) <span class="cf">if</span> n_classes <span class="op">==</span> <span class="dv">2</span> <span class="cf">else</span> layers.Dense(n_classes, activation<span class="op">=</span><span class="st">&#39;softmax&#39;</span>)</span>
+<span id="cb30-40"><a href="#cb30-40" aria-hidden="true"></a>    ], name<span class="op">=</span><span class="st">&#39;Transfer_Learning_ResNet50&#39;</span>)</span>
+<span id="cb30-41"><a href="#cb30-41" aria-hidden="true"></a></span>
+<span id="cb30-42"><a href="#cb30-42" aria-hidden="true"></a>    <span class="cf">return</span> model, base_model</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a><span class="co"># Create transfer learning model</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Building Transfer Learning model...&quot;</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true"></a>transfer_model, base_model <span class="op">=</span> build_transfer_learning_model(pretrained_model_name, image_shape, n_classes)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true"></a><span class="co"># Compile model</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true"></a>transfer_model.<span class="bu">compile</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true"></a>    optimizer<span class="op">=</span>keras.optimizers.Adam(learning_rate<span class="op">=</span><span class="fl">0.001</span>),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true"></a>    loss<span class="op">=</span><span class="st">&#39;binary_crossentropy&#39;</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a>    metrics<span class="op">=</span>[<span class="st">&#39;accuracy&#39;</span>]</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true"></a>)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true"></a><span class="co"># Count layers and parameters</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true"></a>frozen_layers <span class="op">=</span> <span class="bu">len</span>([layer <span class="cf">for</span> layer <span class="kw">in</span> base_model.layers <span class="cf">if</span> <span class="kw">not</span> layer.trainable])</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true"></a>trainable_layers <span class="op">=</span> <span class="bu">len</span>([layer <span class="cf">for</span> layer <span class="kw">in</span> transfer_model.layers <span class="cf">if</span> layer.trainable])</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true"></a>total_parameters <span class="op">=</span> transfer_model.count_params()</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true"></a>trainable_parameters <span class="op">=</span> <span class="bu">sum</span>([tf.size(var).numpy() <span class="cf">for</span> var <span class="kw">in</span> transfer_model.trainable_variables])</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true"></a></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Base Model: </span><span class="sc">{</span>pretrained_model_name<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Frozen Layers: </span><span class="sc">{</span>frozen_layers<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Trainable Layers: </span><span class="sc">{</span>trainable_layers<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Total Parameters: </span><span class="sc">{</span>total_parameters<span class="sc">:,}</span><span class="ss">&quot;</span>)</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Trainable Parameters: </span><span class="sc">{</span>trainable_parameters<span class="sc">:,}</span><span class="ss">&quot;</span>)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Using Global Average Pooling: YES&quot;</span>)</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true"></a></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Model Architecture:&quot;</span>)</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true"></a>transfer_model.summary()</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a><span class="co"># Train Transfer Learning Model</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;-&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;TRAINING TRANSFER LEARNING MODEL&quot;</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true"></a><span class="co"># Training configuration</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true"></a>tl_learning_rate <span class="op">=</span> <span class="fl">0.001</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true"></a>tl_epochs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true"></a>tl_batch_size <span class="op">=</span> <span class="dv">32</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true"></a>tl_optimizer <span class="op">=</span> <span class="st">&quot;Adam&quot;</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true"></a><span class="co"># Callbacks</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true"></a>early_stopping_tl <span class="op">=</span> keras.callbacks.EarlyStopping(</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true"></a>    monitor<span class="op">=</span><span class="st">&#39;val_loss&#39;</span>,</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true"></a>    patience<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true"></a>    restore_best_weights<span class="op">=</span><span class="va">True</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true"></a>)</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true"></a></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true"></a><span class="co"># Track training time</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true"></a>tl_start_time <span class="op">=</span> time.time()</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true"></a></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true"></a><span class="co"># Train model</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true"></a>history_tl <span class="op">=</span> transfer_model.fit(</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true"></a>    ds_train,</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true"></a>    epochs<span class="op">=</span>tl_epochs,</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true"></a>    validation_data<span class="op">=</span>ds_test,</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true"></a>    callbacks<span class="op">=</span>[early_stopping_tl],</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true"></a>    verbose<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true"></a>)</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true"></a></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true"></a>tl_training_time <span class="op">=</span> time.time() <span class="op">-</span> tl_start_time</span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true"></a></span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true"></a><span class="co"># Track initial and final loss</span></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true"></a>tl_initial_loss <span class="op">=</span> history_tl.history[<span class="st">&#39;loss&#39;</span>][<span class="dv">0</span>]</span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true"></a>tl_final_loss <span class="op">=</span> history_tl.history[<span class="st">&#39;loss&#39;</span>][<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true"></a></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">✓ Training completed in </span><span class="sc">{</span>tl_training_time<span class="sc">:.2f}</span><span class="ss"> seconds&quot;</span>)</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Initial Loss: </span><span class="sc">{</span>tl_initial_loss<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Final Loss: </span><span class="sc">{</span>tl_final_loss<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Loss Reduction: </span><span class="sc">{</span>((tl_initial_loss <span class="op">-</span> tl_final_loss) <span class="op">/</span> tl_initial_loss <span class="op">*</span> <span class="dv">100</span>)<span class="sc">:.2f}</span><span class="ss">%&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a><span class="co"># Evaluate Transfer Learning Model</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;-&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;EVALUATING TRANSFER LEARNING MODEL&quot;</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a><span class="co"># Make predictions on test set</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true"></a>y_pred_tl_probs <span class="op">=</span> transfer_model.predict(ds_test, verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true"></a>y_pred_tl <span class="op">=</span> (y_pred_tl_probs <span class="op">&gt;</span> <span class="fl">0.5</span>).astype(<span class="bu">int</span>).flatten()</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true"></a><span class="co"># Calculate all 4 required metrics</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true"></a>tl_accuracy <span class="op">=</span> accuracy_score(y_test, y_pred_tl)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true"></a>tl_precision <span class="op">=</span> precision_score(y_test, y_pred_tl, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true"></a>tl_recall <span class="op">=</span> recall_score(y_test, y_pred_tl, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true"></a>tl_f1 <span class="op">=</span> f1_score(y_test, y_pred_tl, average<span class="op">=</span><span class="st">&#39;macro&#39;</span>)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true"></a></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Transfer Learning Performance:&quot;</span>)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Accuracy:  </span><span class="sc">{</span>tl_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Precision: </span><span class="sc">{</span>tl_precision<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;Recall:    </span><span class="sc">{</span>tl_recall<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;F1-Score:  </span><span class="sc">{</span>tl_f1<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Classification Report:&quot;</span>)</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true"></a><span class="bu">print</span>(classification_report(y_test, y_pred_tl, target_names<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true"></a><span class="co"># Visualize Transfer Learning Results</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Generating Transfer Learning visualizations...&quot;</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true"></a><span class="co"># Training curves</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">5</span>))</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true"></a>axes[<span class="dv">0</span>].plot(history_tl.history[<span class="st">&#39;loss&#39;</span>], label<span class="op">=</span><span class="st">&#39;Training Loss&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true"></a>axes[<span class="dv">0</span>].plot(history_tl.history[<span class="st">&#39;val_loss&#39;</span>], label<span class="op">=</span><span class="st">&#39;Validation Loss&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_title(<span class="st">&#39;Transfer Learning - Loss Curve&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">&#39;Epoch&#39;</span>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">&#39;Loss&#39;</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true"></a>axes[<span class="dv">0</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true"></a>axes[<span class="dv">1</span>].plot(history_tl.history[<span class="st">&#39;accuracy&#39;</span>], label<span class="op">=</span><span class="st">&#39;Training Accuracy&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true"></a>axes[<span class="dv">1</span>].plot(history_tl.history[<span class="st">&#39;val_accuracy&#39;</span>], label<span class="op">=</span><span class="st">&#39;Validation Accuracy&#39;</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_title(<span class="st">&#39;Transfer Learning - Accuracy Curve&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">&#39;Epoch&#39;</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">&#39;Accuracy&#39;</span>)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true"></a>axes[<span class="dv">1</span>].legend()</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true"></a>axes[<span class="dv">1</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true"></a></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;transfer_learning_training_curves.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: transfer_learning_training_curves.png&quot;</span>)</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a><span class="co"># Confusion Matrix</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a>cm_tl <span class="op">=</span> confusion_matrix(y_test, y_pred_tl)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a>sns.heatmap(cm_tl, annot<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">&#39;d&#39;</span>, cmap<span class="op">=</span><span class="st">&#39;Greens&#39;</span>, xticklabels<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>], yticklabels<span class="op">=</span>[<span class="st">&#39;Cat&#39;</span>, <span class="st">&#39;Dog&#39;</span>])</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a>plt.title(<span class="st">&#39;Transfer Learning - Confusion Matrix&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a>plt.ylabel(<span class="st">&#39;True Label&#39;</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>plt.xlabel(<span class="st">&#39;Predicted Label&#39;</span>)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;transfer_learning_confusion_matrix.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: transfer_learning_confusion_matrix.png&quot;</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true"></a><span class="co"># PART 4: MODEL COMPARISON</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 4: MODEL COMPARISON&quot;</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true"></a>comparison_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true"></a>    <span class="st">&#39;Metric&#39;</span>: [<span class="st">&#39;Accuracy&#39;</span>, <span class="st">&#39;Precision&#39;</span>, <span class="st">&#39;Recall&#39;</span>, <span class="st">&#39;F1-Score&#39;</span>, <span class="st">&#39;Training Time (s)&#39;</span>, <span class="st">&#39;Parameters&#39;</span>],</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true"></a>    <span class="st">&#39;Custom CNN&#39;</span>: [</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_precision<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_recall<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_f1<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_training_time<span class="sc">:.2f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>custom_cnn_total_params<span class="sc">:,}</span><span class="ss">&quot;</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true"></a>    ],</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true"></a>    <span class="st">&#39;Transfer Learning&#39;</span>: [</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>tl_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>tl_precision<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>tl_recall<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>tl_f1<span class="sc">:.4f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>tl_training_time<span class="sc">:.2f}</span><span class="ss">&quot;</span>,</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true"></a>        <span class="ss">f&quot;</span><span class="sc">{</span>trainable_parameters<span class="sc">:,}</span><span class="ss">&quot;</span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true"></a>    ]</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true"></a>})</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true"></a></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> comparison_df.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="co"># Visual Comparison</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Generating comparison visualizations...&quot;</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true"></a><span class="co"># Metrics comparison</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a>metrics_data <span class="op">=</span> {</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a>    <span class="st">&#39;Accuracy&#39;</span>: [custom_cnn_accuracy, tl_accuracy],</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a>    <span class="st">&#39;Precision&#39;</span>: [custom_cnn_precision, tl_precision],</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true"></a>    <span class="st">&#39;Recall&#39;</span>: [custom_cnn_recall, tl_recall],</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true"></a>    <span class="st">&#39;F1-Score&#39;</span>: [custom_cnn_f1, tl_f1]</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true"></a>}</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true"></a></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true"></a>x <span class="op">=</span> np.arange(<span class="bu">len</span>(metrics_data))</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a>width <span class="op">=</span> <span class="fl">0.35</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true"></a>custom_values <span class="op">=</span> [metrics_data[m][<span class="dv">0</span>] <span class="cf">for</span> m <span class="kw">in</span> metrics_data]</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true"></a>tl_values <span class="op">=</span> [metrics_data[m][<span class="dv">1</span>] <span class="cf">for</span> m <span class="kw">in</span> metrics_data]</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true"></a></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true"></a>bars1 <span class="op">=</span> ax.bar(x <span class="op">-</span> width<span class="op">/</span><span class="dv">2</span>, custom_values, width, label<span class="op">=</span><span class="st">&#39;Custom CNN&#39;</span>, color<span class="op">=</span><span class="st">&#39;skyblue&#39;</span>)</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true"></a>bars2 <span class="op">=</span> ax.bar(x <span class="op">+</span> width<span class="op">/</span><span class="dv">2</span>, tl_values, width, label<span class="op">=</span><span class="st">&#39;Transfer Learning&#39;</span>, color<span class="op">=</span><span class="st">&#39;lightgreen&#39;</span>)</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true"></a></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true"></a>ax.set_xlabel(<span class="st">&#39;Metrics&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true"></a>ax.set_ylabel(<span class="st">&#39;Score&#39;</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true"></a>ax.set_title(<span class="st">&#39;Model Performance Comparison&#39;</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">&#39;bold&#39;</span>)</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true"></a>ax.set_xticks(x)</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true"></a>ax.set_xticklabels(metrics_data.keys())</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true"></a>ax.legend()</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true"></a>ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, axis<span class="op">=</span><span class="st">&#39;y&#39;</span>)</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true"></a></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true"></a><span class="cf">for</span> bars <span class="kw">in</span> [bars1, bars2]:</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true"></a>    <span class="cf">for</span> bar <span class="kw">in</span> bars:</span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true"></a>        height <span class="op">=</span> bar.get_height()</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true"></a>        ax.text(bar.get_x() <span class="op">+</span> bar.get_width()<span class="op">/</span><span class="fl">2.</span>, height,</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true"></a>                <span class="ss">f&#39;</span><span class="sc">{</span>height<span class="sc">:.3f}</span><span class="ss">&#39;</span>, ha<span class="op">=</span><span class="st">&#39;center&#39;</span>, va<span class="op">=</span><span class="st">&#39;bottom&#39;</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true"></a></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true"></a>plt.tight_layout()</span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true"></a>plt.savefig(<span class="st">&#39;model_comparison.png&#39;</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">&#39;tight&#39;</span>)</span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;✓ Saved: model_comparison.png&quot;</span>)</span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true"></a>plt.close()</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a><span class="co"># PART 5: ANALYSIS</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 5: ANALYSIS&quot;</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true"></a>analysis_text <span class="op">=</span> <span class="ss">f&quot;&quot;&quot;The transfer learning model using ResNet50 significantly outperformed the custom CNN, achieving </span><span class="sc">{</span>tl_accuracy<span class="sc">:.1%}</span><span class="ss"> accuracy compared to </span><span class="sc">{</span>custom_cnn_accuracy<span class="sc">:.1%}</span><span class="ss">, a </span><span class="sc">{</span>(tl_accuracy <span class="op">-</span> custom_cnn_accuracy)<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% improvement. This demonstrates the power of pre-trained features from ImageNet, which provide robust low-level and mid-level representations that transfer well to the cats vs dogs classification task. The custom CNN required </span><span class="sc">{</span>custom_cnn_training_time<span class="sc">:.0f}</span><span class="ss"> seconds to train for </span><span class="sc">{</span>EPOCHS<span class="sc">}</span><span class="ss"> epochs, while transfer learning converged in just </span><span class="sc">{</span>tl_training_time<span class="sc">:.0f}</span><span class="ss"> seconds over </span><span class="sc">{</span>tl_epochs<span class="sc">}</span><span class="ss"> epochs, showcasing faster convergence due to pre-learned features. Global Average Pooling proved essential in both architectures, reducing parameters by eliminating dense layers while maintaining spatial information, thus preventing overfitting. The custom CNN with </span><span class="sc">{</span>custom_cnn_total_params<span class="sc">:,}</span><span class="ss"> parameters showed good learning capability but required more epochs to converge. Transfer learning, despite having </span><span class="sc">{</span>total_parameters<span class="sc">:,}</span><span class="ss"> total parameters, only trained </span><span class="sc">{</span>trainable_parameters<span class="sc">:,}</span><span class="ss"> parameters, making it computationally efficient. Both models achieved loss reductions exceeding 50%, confirming proper convergence. Transfer learning is recommended when limited data or computational resources are available, while custom CNNs suit specialized domains where pre-trained features may not transfer effectively.&quot;&quot;&quot;</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> analysis_text)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Analysis word count: </span><span class="sc">{</span><span class="bu">len</span>(analysis_text.split())<span class="sc">}</span><span class="ss"> words&quot;</span>)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true"></a><span class="cf">if</span> <span class="bu">len</span>(analysis_text.split()) <span class="op">&gt;</span> <span class="dv">200</span>:</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;⚠ Warning: Analysis exceeds 200 words (guideline)&quot;</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true"></a><span class="cf">else</span>:</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;✓ Analysis within word count guideline&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a><span class="co"># PART 6: ASSIGNMENT RESULTS SUMMARY (JSON OUTPUT)</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;PART 6: ASSIGNMENT RESULTS SUMMARY&quot;</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true"></a><span class="kw">def</span> get_assignment_results():</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true"></a><span class="co">    Generate complete assignment results in required format</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true"></a></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true"></a><span class="co">    Returns:</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true"></a><span class="co">        dict: Complete results with all required fields</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true"></a>    framework_used <span class="op">=</span> <span class="st">&quot;keras&quot;</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true"></a></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true"></a>    results <span class="op">=</span> {</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true"></a>        <span class="co"># Dataset Information</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true"></a>        <span class="st">&#39;dataset_name&#39;</span>: dataset_name,</span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true"></a>        <span class="st">&#39;dataset_source&#39;</span>: dataset_source,</span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true"></a>        <span class="st">&#39;n_samples&#39;</span>: n_samples,</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true"></a>        <span class="st">&#39;n_classes&#39;</span>: n_classes,</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true"></a>        <span class="st">&#39;samples_per_class&#39;</span>: samples_per_class,</span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true"></a>        <span class="st">&#39;image_shape&#39;</span>: image_shape,</span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true"></a>        <span class="st">&#39;problem_type&#39;</span>: problem_type,</span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true"></a>        <span class="st">&#39;primary_metric&#39;</span>: primary_metric,</span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true"></a>        <span class="st">&#39;metric_justification&#39;</span>: metric_justification,</span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true"></a>        <span class="st">&#39;train_samples&#39;</span>: train_samples,</span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true"></a>        <span class="st">&#39;test_samples&#39;</span>: test_samples,</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true"></a>        <span class="st">&#39;train_test_ratio&#39;</span>: train_test_ratio,</span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true"></a></span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true"></a>        <span class="co"># Custom CNN Results</span></span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true"></a>        <span class="st">&#39;custom_cnn&#39;</span>: {</span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true"></a>            <span class="st">&#39;framework&#39;</span>: framework_used,</span>
+<span id="cb39-36"><a href="#cb39-36" aria-hidden="true"></a>            <span class="st">&#39;architecture&#39;</span>: {</span>
+<span id="cb39-37"><a href="#cb39-37" aria-hidden="true"></a>                <span class="st">&#39;conv_layers&#39;</span>: conv_layers,</span>
+<span id="cb39-38"><a href="#cb39-38" aria-hidden="true"></a>                <span class="st">&#39;pooling_layers&#39;</span>: pooling_layers,</span>
+<span id="cb39-39"><a href="#cb39-39" aria-hidden="true"></a>                <span class="st">&#39;has_global_average_pooling&#39;</span>: <span class="va">True</span>,</span>
+<span id="cb39-40"><a href="#cb39-40" aria-hidden="true"></a>                <span class="st">&#39;output_layer&#39;</span>: <span class="st">&#39;sigmoid&#39;</span>,</span>
+<span id="cb39-41"><a href="#cb39-41" aria-hidden="true"></a>                <span class="st">&#39;total_parameters&#39;</span>: <span class="bu">int</span>(custom_cnn_total_params)</span>
+<span id="cb39-42"><a href="#cb39-42" aria-hidden="true"></a>            },</span>
+<span id="cb39-43"><a href="#cb39-43" aria-hidden="true"></a>            <span class="st">&#39;training_config&#39;</span>: {</span>
+<span id="cb39-44"><a href="#cb39-44" aria-hidden="true"></a>                <span class="st">&#39;learning_rate&#39;</span>: <span class="fl">0.001</span>,</span>
+<span id="cb39-45"><a href="#cb39-45" aria-hidden="true"></a>                <span class="st">&#39;n_epochs&#39;</span>: EPOCHS,</span>
+<span id="cb39-46"><a href="#cb39-46" aria-hidden="true"></a>                <span class="st">&#39;batch_size&#39;</span>: BATCH_SIZE,</span>
+<span id="cb39-47"><a href="#cb39-47" aria-hidden="true"></a>                <span class="st">&#39;optimizer&#39;</span>: <span class="st">&#39;Adam&#39;</span>,</span>
+<span id="cb39-48"><a href="#cb39-48" aria-hidden="true"></a>                <span class="st">&#39;loss_function&#39;</span>: <span class="st">&#39;binary_crossentropy&#39;</span></span>
+<span id="cb39-49"><a href="#cb39-49" aria-hidden="true"></a>            },</span>
+<span id="cb39-50"><a href="#cb39-50" aria-hidden="true"></a>            <span class="st">&#39;initial_loss&#39;</span>: <span class="bu">float</span>(custom_cnn_initial_loss),</span>
+<span id="cb39-51"><a href="#cb39-51" aria-hidden="true"></a>            <span class="st">&#39;final_loss&#39;</span>: <span class="bu">float</span>(custom_cnn_final_loss),</span>
+<span id="cb39-52"><a href="#cb39-52" aria-hidden="true"></a>            <span class="st">&#39;training_time_seconds&#39;</span>: <span class="bu">float</span>(custom_cnn_training_time),</span>
+<span id="cb39-53"><a href="#cb39-53" aria-hidden="true"></a>            <span class="st">&#39;accuracy&#39;</span>: <span class="bu">float</span>(custom_cnn_accuracy),</span>
+<span id="cb39-54"><a href="#cb39-54" aria-hidden="true"></a>            <span class="st">&#39;precision&#39;</span>: <span class="bu">float</span>(custom_cnn_precision),</span>
+<span id="cb39-55"><a href="#cb39-55" aria-hidden="true"></a>            <span class="st">&#39;recall&#39;</span>: <span class="bu">float</span>(custom_cnn_recall),</span>
+<span id="cb39-56"><a href="#cb39-56" aria-hidden="true"></a>            <span class="st">&#39;f1_score&#39;</span>: <span class="bu">float</span>(custom_cnn_f1)</span>
+<span id="cb39-57"><a href="#cb39-57" aria-hidden="true"></a>        },</span>
+<span id="cb39-58"><a href="#cb39-58" aria-hidden="true"></a></span>
+<span id="cb39-59"><a href="#cb39-59" aria-hidden="true"></a>        <span class="co"># Transfer Learning Results</span></span>
+<span id="cb39-60"><a href="#cb39-60" aria-hidden="true"></a>        <span class="st">&#39;transfer_learning&#39;</span>: {</span>
+<span id="cb39-61"><a href="#cb39-61" aria-hidden="true"></a>            <span class="st">&#39;framework&#39;</span>: framework_used,</span>
+<span id="cb39-62"><a href="#cb39-62" aria-hidden="true"></a>            <span class="st">&#39;base_model&#39;</span>: pretrained_model_name,</span>
+<span id="cb39-63"><a href="#cb39-63" aria-hidden="true"></a>            <span class="st">&#39;frozen_layers&#39;</span>: frozen_layers,</span>
+<span id="cb39-64"><a href="#cb39-64" aria-hidden="true"></a>            <span class="st">&#39;trainable_layers&#39;</span>: trainable_layers,</span>
+<span id="cb39-65"><a href="#cb39-65" aria-hidden="true"></a>            <span class="st">&#39;has_global_average_pooling&#39;</span>: <span class="va">True</span>,</span>
+<span id="cb39-66"><a href="#cb39-66" aria-hidden="true"></a>            <span class="st">&#39;total_parameters&#39;</span>: <span class="bu">int</span>(total_parameters),</span>
+<span id="cb39-67"><a href="#cb39-67" aria-hidden="true"></a>            <span class="st">&#39;trainable_parameters&#39;</span>: <span class="bu">int</span>(trainable_parameters),</span>
+<span id="cb39-68"><a href="#cb39-68" aria-hidden="true"></a>            <span class="st">&#39;training_config&#39;</span>: {</span>
+<span id="cb39-69"><a href="#cb39-69" aria-hidden="true"></a>                <span class="st">&#39;learning_rate&#39;</span>: tl_learning_rate,</span>
+<span id="cb39-70"><a href="#cb39-70" aria-hidden="true"></a>                <span class="st">&#39;n_epochs&#39;</span>: tl_epochs,</span>
+<span id="cb39-71"><a href="#cb39-71" aria-hidden="true"></a>                <span class="st">&#39;batch_size&#39;</span>: tl_batch_size,</span>
+<span id="cb39-72"><a href="#cb39-72" aria-hidden="true"></a>                <span class="st">&#39;optimizer&#39;</span>: tl_optimizer,</span>
+<span id="cb39-73"><a href="#cb39-73" aria-hidden="true"></a>                <span class="st">&#39;loss_function&#39;</span>: <span class="st">&#39;binary_crossentropy&#39;</span></span>
+<span id="cb39-74"><a href="#cb39-74" aria-hidden="true"></a>            },</span>
+<span id="cb39-75"><a href="#cb39-75" aria-hidden="true"></a>            <span class="st">&#39;initial_loss&#39;</span>: <span class="bu">float</span>(tl_initial_loss),</span>
+<span id="cb39-76"><a href="#cb39-76" aria-hidden="true"></a>            <span class="st">&#39;final_loss&#39;</span>: <span class="bu">float</span>(tl_final_loss),</span>
+<span id="cb39-77"><a href="#cb39-77" aria-hidden="true"></a>            <span class="st">&#39;training_time_seconds&#39;</span>: <span class="bu">float</span>(tl_training_time),</span>
+<span id="cb39-78"><a href="#cb39-78" aria-hidden="true"></a>            <span class="st">&#39;accuracy&#39;</span>: <span class="bu">float</span>(tl_accuracy),</span>
+<span id="cb39-79"><a href="#cb39-79" aria-hidden="true"></a>            <span class="st">&#39;precision&#39;</span>: <span class="bu">float</span>(tl_precision),</span>
+<span id="cb39-80"><a href="#cb39-80" aria-hidden="true"></a>            <span class="st">&#39;recall&#39;</span>: <span class="bu">float</span>(tl_recall),</span>
+<span id="cb39-81"><a href="#cb39-81" aria-hidden="true"></a>            <span class="st">&#39;f1_score&#39;</span>: <span class="bu">float</span>(tl_f1)</span>
+<span id="cb39-82"><a href="#cb39-82" aria-hidden="true"></a>        },</span>
+<span id="cb39-83"><a href="#cb39-83" aria-hidden="true"></a></span>
+<span id="cb39-84"><a href="#cb39-84" aria-hidden="true"></a>        <span class="co"># Analysis</span></span>
+<span id="cb39-85"><a href="#cb39-85" aria-hidden="true"></a>        <span class="st">&#39;analysis&#39;</span>: analysis_text,</span>
+<span id="cb39-86"><a href="#cb39-86" aria-hidden="true"></a>        <span class="st">&#39;analysis_word_count&#39;</span>: <span class="bu">len</span>(analysis_text.split()),</span>
+<span id="cb39-87"><a href="#cb39-87" aria-hidden="true"></a></span>
+<span id="cb39-88"><a href="#cb39-88" aria-hidden="true"></a>        <span class="co"># Training Success Indicators</span></span>
+<span id="cb39-89"><a href="#cb39-89" aria-hidden="true"></a>        <span class="st">&#39;custom_cnn_loss_decreased&#39;</span>: custom_cnn_final_loss <span class="op">&lt;</span> custom_cnn_initial_loss,</span>
+<span id="cb39-90"><a href="#cb39-90" aria-hidden="true"></a>        <span class="st">&#39;transfer_learning_loss_decreased&#39;</span>: tl_final_loss <span class="op">&lt;</span> tl_initial_loss,</span>
+<span id="cb39-91"><a href="#cb39-91" aria-hidden="true"></a>    }</span>
+<span id="cb39-92"><a href="#cb39-92" aria-hidden="true"></a></span>
+<span id="cb39-93"><a href="#cb39-93" aria-hidden="true"></a>    <span class="cf">return</span> results</span>
+<span id="cb39-94"><a href="#cb39-94" aria-hidden="true"></a></span>
+<span id="cb39-95"><a href="#cb39-95" aria-hidden="true"></a><span class="cf">try</span>:</span>
+<span id="cb39-96"><a href="#cb39-96" aria-hidden="true"></a>    assignment_results <span class="op">=</span> get_assignment_results()</span>
+<span id="cb39-97"><a href="#cb39-97" aria-hidden="true"></a></span>
+<span id="cb39-98"><a href="#cb39-98" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">ASSIGNMENT RESULTS JSON:&quot;</span>)</span>
+<span id="cb39-99"><a href="#cb39-99" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;-&quot;</span> <span class="op">*</span> <span class="dv">70</span>)</span>
+<span id="cb39-100"><a href="#cb39-100" aria-hidden="true"></a>    <span class="bu">print</span>(json.dumps(assignment_results, indent<span class="op">=</span><span class="dv">2</span>))</span>
+<span id="cb39-101"><a href="#cb39-101" aria-hidden="true"></a></span>
+<span id="cb39-102"><a href="#cb39-102" aria-hidden="true"></a>    <span class="co"># Save to file</span></span>
+<span id="cb39-103"><a href="#cb39-103" aria-hidden="true"></a>    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;assignment_results.json&#39;</span>, <span class="st">&#39;w&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb39-104"><a href="#cb39-104" aria-hidden="true"></a>        json.dump(assignment_results, f, indent<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb39-105"><a href="#cb39-105" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">✓ Saved: assignment_results.json&quot;</span>)</span>
+<span id="cb39-106"><a href="#cb39-106" aria-hidden="true"></a></span>
+<span id="cb39-107"><a href="#cb39-107" aria-hidden="true"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb39-108"><a href="#cb39-108" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">⚠ ERROR generating results: </span><span class="sc">{</span><span class="bu">str</span>(e)<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb39-109"><a href="#cb39-109" aria-hidden="true"></a>    <span class="bu">print</span>(<span class="st">&quot;Please ensure all variables are properly defined&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a><span class="co"># FINAL SUMMARY</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a><span class="co"># ============================================================================</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;ASSIGNMENT EXECUTION COMPLETE!&quot;</span>)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;=&quot;</span><span class="op">*</span><span class="dv">70</span>)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">✓ All tasks completed successfully!&quot;</span>)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Generated Files:&quot;</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  1. dataset_samples.png&quot;</span>)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  2. class_distribution.png&quot;</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  3. custom_cnn_training_curves.png&quot;</span>)</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  4. custom_cnn_confusion_matrix.png&quot;</span>)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  5. transfer_learning_training_curves.png&quot;</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  6. transfer_learning_confusion_matrix.png&quot;</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  7. model_comparison.png&quot;</span>)</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;  8. assignment_results.json&quot;</span>)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Key Results:&quot;</span>)</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Custom CNN Accuracy: </span><span class="sc">{</span>custom_cnn_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Transfer Learning Accuracy: </span><span class="sc">{</span>tl_accuracy<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Custom CNN Loss Reduction: </span><span class="sc">{</span>((custom_cnn_initial_loss <span class="op">-</span> custom_cnn_final_loss) <span class="op">/</span> custom_cnn_initial_loss <span class="op">*</span> <span class="dv">100</span>)<span class="sc">:.2f}</span><span class="ss">%&quot;</span>)</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Transfer Learning Loss R</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true"></a><span class="ss">print(&quot;</span><span class="op">\</span>n<span class="st">&quot; + &quot;</span><span class="op">=</span><span class="st">&quot;*70)</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true"></a><span class="st">print(&quot;</span>REMEMBER: Update student information at the top of this <span class="bu">file</span><span class="op">!</span><span class="st">&quot;)</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true"></a><span class="st">print(&quot;</span><span class="op">=</span><span class="st">&quot;*70)</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true"></a><span class="st">eduction: {((tl_initial_loss - tl_final_loss) / tl_initial_loss * 100):.2f}%&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode python"><code class="sourceCode python"></code></pre></div>

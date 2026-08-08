@@ -1,0 +1,69 @@
+{
+  "dataset_name": "Cats vs Dogs",
+  "dataset_source": "Hugging Face Datasets (Microsoft)",
+  "n_samples": 23410,
+  "n_classes": 2,
+  "samples_per_class": "min: 11705, max: 11705, avg: 11705",
+  "image_shape": [
+    224,
+    224,
+    3
+  ],
+  "problem_type": "binary_classification",
+  "primary_metric": "accuracy",
+  "metric_justification": "Accuracy is chosen as the primary metric because the Cats vs Dogs dataset is balanced with approximately equal samples per class, making accuracy a reliable performance indicator.",
+  "train_samples": 19898,
+  "test_samples": 3512,
+  "train_test_ratio": "85/15",
+  "custom_cnn": {
+    "framework": "keras",
+    "architecture": {
+      "conv_layers": 6,
+      "pooling_layers": 3,
+      "has_global_average_pooling": true,
+      "output_layer": "sigmoid",
+      "total_parameters": 288929
+    },
+    "training_config": {
+      "learning_rate": 0.001,
+      "n_epochs": 20,
+      "batch_size": 32,
+      "optimizer": "Adam",
+      "loss_function": "binary_crossentropy"
+    },
+    "initial_loss": 0.6401696801185608,
+    "final_loss": 0.0746045708656311,
+    "training_time_seconds": 956.9586486816406,
+    "accuracy": 0.9544419134396356,
+    "precision": 0.9545161997718836,
+    "recall": 0.9544047594337665,
+    "f1_score": 0.9544353968982466
+  },
+  "transfer_learning": {
+    "framework": "keras",
+    "base_model": "ResNet50",
+    "frozen_layers": 175,
+    "trainable_layers": 4,
+    "has_global_average_pooling": true,
+    "total_parameters": 23589761,
+    "trainable_parameters": 2049,
+    "training_config": {
+      "learning_rate": 0.001,
+      "n_epochs": 10,
+      "batch_size": 32,
+      "optimizer": "Adam",
+      "loss_function": "binary_crossentropy"
+    },
+    "initial_loss": 0.6372159719467163,
+    "final_loss": 0.45724764466285706,
+    "training_time_seconds": 621.1927871704102,
+    "accuracy": 0.7667995444191344,
+    "precision": 0.7672863525518967,
+    "recall": 0.7666427103657271,
+    "f1_score": 0.7666140905036479
+  },
+  "analysis": "The custom CNN outperformed the ResNet50 transfer-learning model, achieving 95.4% accuracy compared with 76.7%, a 18.8 percentage-point difference. Although ResNet50 provides powerful ImageNet-pretrained features, its performance was limited because most layers were frozen, with only 2,049 of 23,589,761 parameters trainable. This restricted the model's ability to adapt to the Cats vs Dogs dataset.\nThe custom CNN required 957 seconds for 20 epochs, while ResNet50 required 621 seconds for 10 epochs. Despite faster training, ResNet50 achieved substantially lower performance. The custom CNN also achieved a lower final loss (0.0746) than transfer learning (0.4572), indicating better task-specific learning.\nGlobal Average Pooling reduced parameters before classification while retaining spatial feature information. Overall, the custom CNN was the preferred model, achieving higher accuracy, precision, recall, and F1-score. ResNet50 could potentially improve through greater fine-tuning, optimized learning rates, or a more suitable pre-trained architecture.",
+  "analysis_word_count": 139,
+  "custom_cnn_loss_decreased": true,
+  "transfer_learning_loss_decreased": true
+}
